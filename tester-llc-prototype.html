@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tester LLC — Custom Homes, Built On-Site</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f2ec;--paper-2:#eae6dd;--ink:#1b1a16;--ink-soft:#6c6860;
+    --forest:#3c4a3a;--forest-deep:#2c3a2c;--line:rgba(27,26,22,.14);
+    --display:'Fraunces',Georgia,serif;--sans:'Inter',system-ui,sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:clip}
+  body.locked{overflow:hidden;height:100vh}
+  ::selection{background:var(--forest);color:#fff}
+  img{display:block;max-width:100%}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--forest);outline-offset:3px}
+  .eyebrow{font-size:.7rem;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--forest)}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 clamp(1.4rem,5vw,3.5rem)}
+
+  /* ── intro preloader (signature load sequence) ───────────────── */
+  .preloader{position:fixed;inset:0;z-index:1000;background:var(--forest-deep);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    transition:transform 1s var(--ease);will-change:transform}
+  .preloader.done{transform:translateY(-101%)}
+  .pre-words{position:relative;height:1.3em;display:flex;align-items:center;justify-content:center}
+  .pre-word{position:absolute;left:50%;top:50%;transform:translate(-50%,-40%);white-space:nowrap;
+    font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(1.7rem,5vw,3.4rem);
+    opacity:0;transition:opacity .5s var(--ease),transform .5s var(--ease)}
+  .pre-word.active{opacity:1;transform:translate(-50%,-50%)}
+  .pre-count{position:absolute;right:clamp(1.4rem,5vw,3.5rem);bottom:clamp(1.6rem,5vw,3rem);
+    font-family:var(--display);font-weight:400;font-size:clamp(2.6rem,8vw,5.4rem);line-height:1;
+    display:flex;align-items:flex-start;gap:.06em;letter-spacing:-.02em}
+  .pre-count .pct{font-size:.34em;margin-top:.55em;opacity:.6}
+  .pre-tag{position:absolute;left:clamp(1.4rem,5vw,3.5rem);bottom:clamp(1.8rem,5vw,3.2rem);
+    font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;opacity:.55}
+  .pre-bar{position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--paper);opacity:.85;transition:width .1s linear}
+
+  header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(244,242,236,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--line);transition:background .4s var(--ease),box-shadow .4s var(--ease)}
+  header.scrolled{background:rgba(244,242,236,.94)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:clamp(3.4rem,7vh,4.4rem)}
+  .brand{font-family:var(--display);font-size:clamp(1.15rem,2.4vw,1.4rem);font-weight:500;letter-spacing:.22em;text-transform:uppercase;padding-left:.22em;color:var(--ink);white-space:nowrap}
+  nav ul{display:flex;gap:2.4rem;list-style:none}
+  nav a{text-decoration:none;font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink);opacity:.85;position:relative;transition:opacity .3s}
+  nav a::after{content:'';position:absolute;left:0;bottom:-5px;height:1px;width:0;background:var(--forest);transition:width .35s var(--ease)}
+  nav a:hover{opacity:1}nav a:hover::after{width:100%}
+  .nav-cta{border:1px solid var(--line);color:var(--ink);padding:.65rem 1.3rem;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;transition:.35s;white-space:nowrap}
+  .nav-cta:hover{background:var(--forest);color:#fff;border-color:var(--forest)}
+  .menu-toggle{display:none;align-items:center;background:none;border:none;color:var(--ink);cursor:pointer;padding:.8rem 0 .8rem .8rem;margin:-.5rem 0;-webkit-tap-highlight-color:transparent}
+  .menu-toggle .bars{position:relative;width:24px;height:11px;display:inline-block}
+  .menu-toggle .bars i{position:absolute;left:0;width:100%;height:1.5px;background:currentColor;transition:transform .3s var(--ease)}
+  .menu-toggle .bars i:first-child{top:2px}
+  .menu-toggle .bars i:last-child{top:8px}
+  .menu-toggle:hover .bars i:first-child{transform:translateY(1px)}
+  .menu-toggle:hover .bars i:last-child{transform:translateY(-1px)}
+
+  /* full-screen overlay menu */
+  .menu{position:fixed;inset:0;z-index:200;background:var(--forest-deep);color:var(--paper);display:flex;flex-direction:column;padding:clamp(4.5rem,12vw,6rem) clamp(1.4rem,7vw,5rem) clamp(1.6rem,5vh,3rem);overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;visibility:hidden;transform:translateY(-14px);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility .5s}
+  .menu.open{opacity:1;visibility:visible;transform:none}
+  .menu-close{position:absolute;top:clamp(1.2rem,3.5vh,2rem);right:clamp(1.4rem,7vw,5rem);background:none;border:none;color:var(--paper);font-family:var(--sans);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;gap:.55rem}
+  .menu-close:hover{opacity:.6}
+  .menu-eyebrow{margin-top:auto;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:#cdd6c5;margin-bottom:1.8rem}
+  .menu-links{list-style:none;display:flex;flex-direction:column;gap:.2rem}
+  .menu-links a{font-family:var(--display);font-weight:400;font-size:clamp(2rem,7vw,4.4rem);line-height:1.18;color:var(--paper);text-decoration:none;display:inline-block;transition:color .3s,transform .4s var(--ease);opacity:0;transform:translateY(18px)}
+  .menu.open .menu-links a{opacity:1;transform:none;transition:color .3s,opacity .6s var(--ease),transform .6s var(--ease)}
+  .menu.open .menu-links li:nth-child(2) a{transition-delay:.06s}
+  .menu.open .menu-links li:nth-child(3) a{transition-delay:.12s}
+  .menu.open .menu-links li:nth-child(4) a{transition-delay:.18s}
+  .menu.open .menu-links li:nth-child(5) a{transition-delay:.24s}
+  .menu-links a:hover{color:#cdd6c5}
+  .menu-foot{margin-top:auto;display:flex;justify-content:space-between;gap:1rem 2rem;flex-wrap:wrap;font-size:.82rem;letter-spacing:.04em;color:rgba(244,242,236,.7);border-top:1px solid rgba(244,242,236,.18);padding-top:1.4rem}
+
+  /* signature: outside -> inside scroll reveal (the one motion moment) */
+  .seq{position:relative;height:280vh}
+  .seq-stage{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--ink)}
+  .seq-layer{position:absolute;inset:0;background-position:center;background-size:cover;will-change:transform,opacity}
+  .seq-ext{background-image:url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85');transform:scale(1.04)}
+  .seq-int{background-image:url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1920&q=85');opacity:0;transform:scale(1.14)}
+  .seq-grade{position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,12,.5),transparent 50%);pointer-events:none}
+
+  .seq-copy{position:absolute;z-index:3;left:0;right:0;bottom:clamp(3rem,9vh,6rem);color:#fff;will-change:opacity,transform}
+  .ext-copy h1{font-family:var(--display);font-weight:400;font-size:clamp(2.6rem,7.5vw,6.4rem);line-height:1;letter-spacing:-.015em;margin:1rem 0;text-shadow:0 2px 30px rgba(0,0,0,.3)}
+  .ext-copy h1 em{font-style:italic}
+  .ext-copy p{font-size:1rem;max-width:44ch;color:rgba(255,255,255,.9);text-shadow:0 1px 16px rgba(0,0,0,.35)}
+  .ext-copy .eyebrow{color:#cdd6c5}
+  .hero-actions{display:flex;gap:1.1rem;margin-top:2rem;flex-wrap:wrap}
+  .int-copy{text-align:center;top:50%;bottom:auto;transform:translateY(-50%);opacity:0}
+  .int-copy .eyebrow{color:#cdd6c5}
+  .int-copy h2{font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(2.2rem,6vw,4.4rem);margin-top:.5rem;text-shadow:0 2px 30px rgba(0,0,0,.4)}
+  .scroll-cue{position:absolute;z-index:3;left:50%;bottom:2rem;transform:translateX(-50%);color:rgba(255,255,255,.9);font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:.7rem}
+  .scroll-cue i{width:1px;height:38px;background:#cdd6c5;animation:cue 2.2s ease-in-out infinite}
+  @keyframes cue{0%,100%{opacity:.3;transform:scaleY(.5)}50%{opacity:1;transform:scaleY(1)}}
+
+  .btn{display:inline-flex;align-items:center;gap:.6rem;padding:.95rem 1.9rem;font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:1px solid var(--forest);transition:.35s var(--ease)}
+  .btn-primary{background:var(--forest);color:#fff}
+  .btn-primary:hover{background:var(--forest-deep);border-color:var(--forest-deep);gap:.95rem}
+  .btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+  .btn-ghost:hover{border-color:#fff;gap:.95rem}
+  .btn-dark{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-dark:hover{border-color:var(--forest);color:var(--forest);gap:.95rem}
+
+  .reveal{opacity:0;transform:translateY(28px);filter:blur(6px);transition:opacity .9s var(--ease),transform .9s var(--ease),filter .9s var(--ease)}
+  .reveal.in{opacity:1;transform:none;filter:none}
+  .reveal.d1{transition-delay:.1s}.reveal.d2{transition-delay:.2s}.reveal.d3{transition-delay:.3s}
+
+  /* statement + static facts (count-up on numeric values) */
+  .statement{padding:clamp(5.5rem,13vh,10rem) 0}
+  .statement p{font-family:var(--display);font-size:clamp(1.6rem,3.4vw,2.8rem);line-height:1.32;max-width:24ch;margin:2rem 0;font-weight:400}
+  .statement p .dim{color:var(--ink-soft)}
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1.8rem;margin-top:2.6rem;border-top:1px solid var(--line);padding-top:2.6rem}
+  .fact .n{font-family:var(--display);font-size:clamp(2.2rem,4.5vw,3.4rem);line-height:1;color:var(--forest);font-weight:400}
+  .fact .l{font-size:.76rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);margin-top:.6rem}
+
+  /* shop the look — pinned horizontal scrub gallery */
+  .scrub{position:relative;height:300vh;background:var(--paper-2)}
+  .scrub-stage{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding-top:clamp(6rem,15vh,9rem);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .scrub-head{position:absolute;top:clamp(4.5rem,12vh,8rem);left:0;right:0;z-index:4;padding:0 clamp(1.4rem,5vw,3.5rem)}
+  .scrub-head .eyebrow{display:block;margin-bottom:.7rem}
+  .scrub-head h2{font-family:var(--display);font-weight:400;font-size:clamp(1.9rem,4.3vw,3.3rem);line-height:1.02}
+  .scrub-track{display:flex;gap:clamp(1rem,3vw,2.4rem);width:max-content;padding:0 clamp(1.4rem,5vw,3.5rem);will-change:transform;align-items:flex-start}
+  .scrub-card{flex:0 0 clamp(260px,34vw,420px);text-decoration:none;color:#fff;display:block}
+  .scrub-card:nth-child(even){margin-top:clamp(40px,9vh,110px)}
+  .scrub-card .sc-frame{position:relative;overflow:hidden;aspect-ratio:4/5;box-shadow:0 12px 32px rgba(0,0,0,.16);transition:transform .55s var(--ease),box-shadow .55s var(--ease)}
+  .scrub-card:hover .sc-frame{transform:translateY(-7px);box-shadow:0 30px 66px rgba(0,0,0,.34)}
+  .scrub-card img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
+  .scrub-card:hover img{transform:scale(1.05)}
+  .scrub-card .sc-frame::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,12,.66),transparent 56%)}
+  .scrub-card .sc-tag{position:absolute;top:1rem;left:1rem;z-index:2;background:rgba(244,242,236,.92);color:var(--ink);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;padding:.4rem .7rem}
+  .scrub-card .sc-info{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:1.6rem}
+  .scrub-card .sc-name{font-family:var(--display);font-size:1.5rem;font-weight:500;line-height:1.05}
+  .scrub-card .sc-meta{font-size:.76rem;color:rgba(255,255,255,.82);margin-top:.35rem}
+  .scrub-card .sc-btn{margin-top:.85rem;display:inline-flex;align-items:center;gap:.5rem;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#fff;border-bottom:1px solid rgba(255,255,255,.6);padding-bottom:.2rem;transition:gap .3s var(--ease)}
+  .scrub-card:hover .sc-btn{gap:.85rem}
+  .scrub-progress{position:absolute;left:clamp(1.4rem,5vw,3.5rem);right:clamp(1.4rem,5vw,3.5rem);bottom:clamp(2rem,6vh,3.5rem);height:1px;background:var(--line);z-index:4}
+  .scrub-progress i{display:block;height:100%;width:0;background:var(--forest)}
+  /* fallback: plain swipe rail on touch / reduced motion */
+  .scrub.is-static{height:auto}
+  .scrub.is-static .scrub-stage{position:static;height:auto;overflow:visible;display:block;padding:clamp(5.5rem,13vh,10rem) 0}
+  .scrub.is-static .scrub-head{position:static;padding:0 clamp(1.4rem,5vw,3.5rem) 2.2rem}
+  .scrub.is-static .scrub-track{width:auto;overflow-x:auto;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none;transform:none!important}
+  .scrub.is-static .scrub-track::-webkit-scrollbar{display:none}
+  .scrub.is-static .scrub-card{scroll-snap-align:start;margin-top:0}
+  .scrub.is-static .scrub-progress{display:none}
+
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem;gap:2rem;flex-wrap:wrap}
+  .section-head h2{font-family:var(--display);font-weight:400;font-size:clamp(1.9rem,4.3vw,3.3rem);line-height:1.02}
+  .section-head .eyebrow{margin-bottom:.9rem;display:block}
+
+  .portfolio{padding:clamp(5.5rem,13vh,10rem) 0}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:clamp(1rem,2vw,1.6rem)}
+  .home{position:relative;overflow:hidden;text-decoration:none;color:#fff;display:block;box-shadow:0 12px 30px rgba(0,0,0,.10);transition:transform .55s var(--ease),box-shadow .55s var(--ease)}
+  .home:hover{transform:translateY(-7px);box-shadow:0 28px 64px rgba(0,0,0,.30)}
+  .home .frame{overflow:hidden;position:relative}
+  .home img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
+  .home:hover img{transform:scale(1.05)}
+  .home .frame::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(20,18,12,.62),transparent 52%)}
+  .home .meta{position:absolute;left:0;bottom:0;z-index:2;padding:1.7rem}
+  .home .meta h3{font-family:var(--display);font-size:1.6rem;font-weight:500;line-height:1.05}
+  .home .meta .loc{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#cdd6c5;margin-bottom:.45rem}
+  .home .meta .spec{font-size:.78rem;color:rgba(255,255,255,.8);margin-top:.4rem}
+  .home.tall .frame{aspect-ratio:3/4}.home.wide .frame{aspect-ratio:4/3}
+  .c8{grid-column:span 8}.c4{grid-column:span 4}.c5{grid-column:span 5}.c7{grid-column:span 7}
+
+  .process{background:var(--paper-2);padding:clamp(5.5rem,13vh,10rem) 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);margin-top:3rem;gap:0}
+  .step{padding:2.2rem 1.6rem 0 0;border-top:1px solid var(--line)}
+  .step .num{font-family:var(--display);font-size:.92rem;color:var(--forest);letter-spacing:.06em;margin-bottom:1.3rem;display:block}
+  .step h3{font-family:var(--display);font-size:1.55rem;font-weight:500;margin-bottom:.8rem}
+  .step p{font-size:.9rem;color:var(--ink-soft);max-width:30ch}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;min-height:560px}
+  .split .visual{overflow:hidden;position:relative}
+  .split .visual img{width:100%;height:100%;object-fit:cover}
+  .split .panel{display:flex;flex-direction:column;justify-content:center;padding:clamp(2.6rem,8vw,6.5rem)}
+  .split .panel h2{font-family:var(--display);font-weight:400;font-size:clamp(1.9rem,4vw,3rem);line-height:1.08;margin:1.1rem 0 1.3rem}
+  .split .panel p{color:var(--ink-soft);max-width:42ch;margin-bottom:2rem}
+
+  .cta{position:relative;padding:clamp(6.5rem,17vh,12rem) 0;text-align:center;overflow:hidden;color:#fff}
+  .cta-img{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=85') center/cover}
+  .cta::after{content:'';position:absolute;inset:0;background:rgba(20,18,12,.55)}
+  .cta-inner{position:relative;z-index:2}
+  .cta h2{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,5.5vw,4.6rem);line-height:1.04;margin-bottom:1.3rem}
+  .cta h2 em{font-style:italic}
+  .cta p{color:rgba(255,255,255,.88);max-width:46ch;margin:0 auto 2.4rem}
+
+  footer{padding:4.5rem 0 2.8rem}
+  .foot-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3rem;margin-bottom:3.5rem}
+  .foot-brand{font-family:var(--display);font-size:1.35rem;letter-spacing:.22em;text-transform:uppercase}
+  .foot-col h4{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--forest);margin-bottom:1.1rem}
+  .foot-col a{display:block;color:var(--ink-soft);text-decoration:none;font-size:.9rem;margin-bottom:.65rem;transition:color .3s}
+  .foot-col a:hover{color:var(--ink)}
+  .foot-base{display:flex;justify-content:space-between;font-size:.76rem;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:1.8rem;flex-wrap:wrap;gap:1rem;letter-spacing:.04em}
+
+  @media(max-width:900px){
+    nav ul,.nav-cta{display:none}
+    .menu-toggle{display:inline-flex}
+    .steps,.facts{grid-template-columns:repeat(2,1fr);gap:1.4rem}
+    .split{grid-template-columns:1fr}.split .visual{min-height:320px}
+    .c8,.c4,.c5,.c7{grid-column:span 12}
+  }
+  @media(max-width:600px){
+    .steps{grid-template-columns:1fr}
+    .step{padding:1.9rem 0 0 0}
+    .hero-actions{width:100%}
+    .hero-actions .btn{flex:1 1 100%;justify-content:center}
+    .facts{gap:1.4rem 1rem}
+    .home.tall .frame,.home.wide .frame{aspect-ratio:4/3}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .seq{height:auto}.seq-stage{position:relative;height:88vh}
+    .seq-int,.int-copy{display:none}
+    .reveal{opacity:1;transform:none;filter:none}
+    .scrub{height:auto}
+    .scrub-progress{display:none}
+    .preloader{display:none}
+    body.locked{overflow:auto;height:auto}
+  }
+</style>
+</head>
+<body class="locked">
+
+<div class="preloader" id="preloader" role="status" aria-label="Loading">
+  <div class="pre-words" id="preWords">
+    <span class="pre-word">On your land.</span>
+    <span class="pre-word">To your tolerance.</span>
+    <span class="pre-word">One home at a time.</span>
+  </div>
+  <div class="pre-tag">Tester LLC</div>
+  <div class="pre-count"><span id="preNum">0</span><span class="pct">%</span></div>
+  <div class="pre-bar" id="preBar"></div>
+</div>
+
+<header id="header">
+  <div class="wrap nav-inner">
+    <div class="brand">Tester LLC</div>
+    <nav><ul>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#communities">Communities</a></li>
+      <li><a href="#about">About</a></li>
+    </ul></nav>
+    <a href="#contact" class="nav-cta">Start your build</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+      <span class="bars" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+  <button class="menu-close" id="menuClose" aria-label="Close menu">Close <span aria-hidden="true">✕</span></button>
+  <div class="menu-eyebrow">Tester LLC — Custom Homes</div>
+  <ul class="menu-links">
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#communities">Communities</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Start your build</a></li>
+  </ul>
+  <div class="menu-foot">
+    <span>hello@testerllc.com</span>
+    <span>Utah · Colorado · Illinois</span>
+  </div>
+</div>
+
+<section class="seq" id="seq">
+  <div class="seq-stage">
+    <div class="seq-layer seq-ext" id="ext"></div>
+    <div class="seq-layer seq-int" id="int"></div>
+    <div class="seq-grade"></div>
+
+    <div class="seq-copy ext-copy wrap" id="extCopy">
+      <span class="eyebrow">Custom Homes · Built On-Site · Utah · Colorado · Illinois</span>
+      <h1>Drawn from <em>your land</em>.</h1>
+      <p>Every Tester home is stick-built on your site — shaped by the lot, the light, and the way your family actually lives. One home at a time.</p>
+      <div class="hero-actions">
+        <a href="#portfolio" class="btn btn-primary">View the portfolio →</a>
+        <a href="#contact" class="btn btn-ghost">Begin a conversation</a>
+      </div>
+    </div>
+
+    <div class="seq-copy int-copy wrap" id="intCopy">
+      <span class="eyebrow">Step inside</span>
+      <h2>Welcome home.</h2>
+    </div>
+
+    <div class="scroll-cue" id="cue">Scroll to enter<i></i></div>
+  </div>
+</section>
+
+<section class="statement wrap">
+  <span class="eyebrow reveal">The Tester difference</span>
+  <p class="reveal d1">A custom home isn't a model you choose. <span class="dim">It's a place that didn't exist until we built it for you — on your land, to your tolerance, start to finish.</span></p>
+  <div class="facts">
+    <div class="fact reveal"><div class="n" data-target="100" data-suffix="%">0%</div><div class="l">Built on-site</div></div>
+    <div class="fact reveal d1"><div class="n" data-target="3">0</div><div class="l">Metro markets</div></div>
+    <div class="fact reveal d2"><div class="n" data-target="12" data-prefix="~">~0</div><div class="l">Mo. concept to keys</div></div>
+    <div class="fact reveal d3"><div class="n">Limited</div><div class="l">Homes per year</div></div>
+  </div>
+</section>
+
+<section class="scrub" id="scrub">
+  <div class="scrub-stage">
+    <div class="scrub-head">
+      <span class="eyebrow">Shop the look</span>
+      <h2>Homes by style</h2>
+    </div>
+    <div class="scrub-track" id="scrubTrack">
+      <a href="#" class="scrub-card">
+        <div class="sc-frame">
+          <span class="sc-tag">Modern</span>
+          <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1100&q=85" alt="The Ridgeline">
+          <div class="sc-info"><div class="sc-name">The Ridgeline</div><div class="sc-meta">Salt Lake Metro, UT · 5 beds · 8,400 sq ft</div><span class="sc-btn">Tour this home →</span></div>
+        </div>
+      </a>
+      <a href="#" class="scrub-card">
+        <div class="sc-frame">
+          <span class="sc-tag">Mountain</span>
+          <img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1100&q=85" alt="Aspen Hollow">
+          <div class="sc-info"><div class="sc-name">Aspen Hollow</div><div class="sc-meta">Lehi, UT · 4 beds · 6,100 sq ft</div><span class="sc-btn">Tour this home →</span></div>
+        </div>
+      </a>
+      <a href="#" class="scrub-card">
+        <div class="sc-frame">
+          <span class="sc-tag">Glass</span>
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1100&q=85" alt="The Glasshouse">
+          <div class="sc-info"><div class="sc-name">The Glasshouse</div><div class="sc-meta">Denver Metro, CO · 6 beds · 9,200 sq ft</div><span class="sc-btn">Tour this home →</span></div>
+        </div>
+      </a>
+      <a href="#" class="scrub-card">
+        <div class="sc-frame">
+          <span class="sc-tag">Contemporary</span>
+          <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1100&q=85" alt="Canyon House">
+          <div class="sc-info"><div class="sc-name">Canyon House</div><div class="sc-meta">Chicagoland, IL · 5 beds · 7,300 sq ft</div><span class="sc-btn">Tour this home →</span></div>
+        </div>
+      </a>
+      <a href="#" class="scrub-card">
+        <div class="sc-frame">
+          <span class="sc-tag">Prairie</span>
+          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1100&q=85" alt="Meadow House">
+          <div class="sc-info"><div class="sc-name">Meadow House</div><div class="sc-meta">Park City, UT · 4 beds · 5,600 sq ft</div><span class="sc-btn">Tour this home →</span></div>
+        </div>
+      </a>
+      <a href="#" class="scrub-card">
+        <div class="sc-frame">
+          <span class="sc-tag">Estate</span>
+          <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1100&q=85" alt="The Overlook">
+          <div class="sc-info"><div class="sc-name">The Overlook</div><div class="sc-meta">Boulder, CO · 6 beds · 10,100 sq ft</div><span class="sc-btn">Tour this home →</span></div>
+        </div>
+      </a>
+    </div>
+    <div class="scrub-progress"><i></i></div>
+  </div>
+</section>
+
+<section class="portfolio wrap" id="portfolio">
+  <div class="section-head reveal">
+    <div><span class="eyebrow">Selected work</span><h2>Recent residences</h2></div>
+    <a href="#" class="btn btn-dark">All projects →</a>
+  </div>
+  <div class="grid">
+    <a href="#" class="home wide c8 reveal">
+      <div class="frame"><img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1400&q=85" alt="The Ridgeline residence"></div>
+      <div class="meta"><div class="loc">Salt Lake Metro, UT</div><h3>The Ridgeline</h3><div class="spec">5 beds · 8,400 sq ft · 2025</div></div>
+    </a>
+    <a href="#" class="home tall c4 reveal d1">
+      <div class="frame"><img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=900&q=85" alt="Aspen Hollow residence"></div>
+      <div class="meta"><div class="loc">Lehi, UT</div><h3>Aspen Hollow</h3><div class="spec">4 beds · 6,100 sq ft</div></div>
+    </a>
+    <a href="#" class="home tall c5 reveal">
+      <div class="frame"><img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=900&q=85" alt="The Glasshouse residence"></div>
+      <div class="meta"><div class="loc">Denver Metro, CO</div><h3>The Glasshouse</h3><div class="spec">6 beds · 9,200 sq ft</div></div>
+    </a>
+    <a href="#" class="home wide c7 reveal d1">
+      <div class="frame"><img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85" alt="Canyon House residence"></div>
+      <div class="meta"><div class="loc">Chicagoland, IL</div><h3>Canyon House</h3><div class="spec">5 beds · 7,300 sq ft · 2024</div></div>
+    </a>
+  </div>
+  <p style="margin-top:1.4rem;font-size:.74rem;color:var(--ink-soft);letter-spacing:.04em">Placeholder imagery — replace with your own project photography before launch.</p>
+</section>
+<section class="process" id="process">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-bottom:0">
+      <div><span class="eyebrow">How we work</span><h2>Four phases, one standard</h2></div>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><span class="num">01 — Discovery</span><h3>Listen</h3><p>We walk your land and learn how you live before a single line is drawn.</p></div>
+      <div class="step reveal d1"><span class="num">02 — Design</span><h3>Draw</h3><p>Our architects translate your life into spaces, light, and material.</p></div>
+      <div class="step reveal d2"><span class="num">03 — Craft</span><h3>Build</h3><p>A dedicated team and vetted artisans hold every detail to tolerance.</p></div>
+      <div class="step reveal d3"><span class="num">04 — Delivery</span><h3>Hand over</h3><p>We hand you the keys — and stay on for the life of the home.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="split" id="communities">
+  <div class="visual"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1400&q=85" alt="A home set into its site"></div>
+  <div class="panel">
+    <span class="eyebrow reveal">Where we build</span>
+    <h2 class="reveal d1">Communities chosen as carefully as the homes.</h2>
+    <p class="reveal d2">From Salt Lake Metro to Denver and Chicagoland, every home is stick-built on your land — never prefabricated and craned in.</p>
+    <div class="reveal d2"><a href="#" class="btn btn-dark">Explore communities →</a></div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <div class="cta-img"></div>
+  <div class="cta-inner wrap">
+    <span class="eyebrow reveal" style="color:#cdd6c5">Begin</span>
+    <h2 class="reveal d1">Let's build the home <em>you keep picturing</em>.</h2>
+    <p class="reveal d2">Tell us about your land and your vision. We take on a limited number of homes each year.</p>
+    <div class="reveal d2"><a href="#" class="btn btn-primary">Start your build →</a></div>
+  </div>
+</section>
+
+<footer id="about"><div class="wrap">
+  <div class="foot-grid">
+    <div class="foot-col">
+      <div class="foot-brand">Tester LLC</div>
+      <p style="color:var(--ink-soft);max-width:30ch;margin-top:1rem;font-size:.9rem">Custom homes across Utah, Colorado, and Illinois — stick-built on-site, start to finish.</p>
+    </div>
+    <div class="foot-col"><h4>Explore</h4><a href="#portfolio">Portfolio</a><a href="#process">Process</a><a href="#communities">Communities</a><a href="#">Journal</a></div>
+    <div class="foot-col"><h4>Contact</h4><a href="#">hello@testerllc.com</a><a href="#">+1 (435) 000-0000</a><a href="#">Lehi, Utah</a></div>
+  </div>
+  <div class="foot-base"><span>© 2026 Tester LLC</span><span>Prototype — for direction review</span></div>
+</div></footer>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── overlay menu ──────────────────────────────────────────── */
+  (function(){
+    const tog=document.getElementById('menuToggle');
+    const menu=document.getElementById('menu');
+    const close=document.getElementById('menuClose');
+    if(!tog||!menu) return;
+    function open(){ menu.classList.add('open'); menu.setAttribute('aria-hidden','false'); tog.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+    function shut(){ menu.classList.remove('open'); menu.setAttribute('aria-hidden','true'); tog.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+    tog.addEventListener('click',open);
+    if(close) close.addEventListener('click',shut);
+    menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',shut));
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&menu.classList.contains('open')) shut(); });
+  })();
+
+  /* ── preloader ─────────────────────────────────────────────── */
+  (function(){
+    const pre=document.getElementById('preloader');
+    const num=document.getElementById('preNum');
+    const bar=document.getElementById('preBar');
+    const words=Array.from(document.querySelectorAll('.pre-word'));
+    function unlock(){ document.body.classList.remove('locked'); }
+    function finish(){
+      unlock();
+      if(pre){ pre.classList.add('done'); setTimeout(()=>pre.remove(),1050); }
+    }
+    if(reduceMotion || !pre){ unlock(); if(pre) pre.remove(); return; }
+
+    let n=0, wi=0;
+    if(words[0]) words[0].classList.add('active');
+    const wordTimer=setInterval(()=>{
+      if(words[wi]) words[wi].classList.remove('active');
+      wi=(wi+1)%words.length;
+      if(words[wi]) words[wi].classList.add('active');
+    },650);
+    const tick=setInterval(()=>{
+      n+=Math.random()*8+4;
+      if(n>=100){
+        n=100; clearInterval(tick); clearInterval(wordTimer);
+        num.textContent=100; bar.style.width='100%';
+        setTimeout(finish,420);
+      } else {
+        num.textContent=Math.floor(n); bar.style.width=n+'%';
+      }
+    },85);
+    /* hard safety net — never trap the page if anything stalls */
+    setTimeout(()=>{ clearInterval(tick); clearInterval(wordTimer); finish(); },4500);
+  })();
+
+  /* ── hero scroll sequence (unchanged) ──────────────────────── */
+  const header=document.getElementById('header');
+  const ext=document.getElementById('ext'),int=document.getElementById('int'),
+        extCopy=document.getElementById('extCopy'),intCopy=document.getElementById('intCopy'),
+        cue=document.getElementById('cue'),seq=document.getElementById('seq');
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const map=(v,a,b)=>clamp((v-a)/(b-a),0,1);
+
+  function frame(){
+    const y=window.scrollY;
+    header.classList.toggle('scrolled',y>window.innerHeight*0.6);
+    const range=seq.offsetHeight-window.innerHeight;
+    const p=clamp(y/range,0,1);
+    ext.style.transform=`scale(${1.04+p*0.5})`;
+    ext.style.opacity=1-map(p,0.34,0.60);
+    int.style.opacity=map(p,0.34,0.62);
+    int.style.transform=`scale(${1.14-map(p,0.34,1)*0.14})`;
+    const extOut=map(p,0.06,0.30);
+    extCopy.style.opacity=1-extOut;
+    extCopy.style.transform=`translateY(${extOut*-36}px)`;
+    intCopy.style.opacity=map(p,0.60,0.82);
+    cue.style.opacity=1-map(p,0.04,0.18);
+  }
+  let ticking=false;
+  window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(()=>{frame();ticking=false});ticking=true}},{passive:true});
+  frame();
+
+  /* ── reveals ───────────────────────────────────────────────── */
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.16});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* ── count-up stats ────────────────────────────────────────── */
+  function countUp(el){
+    const target=parseFloat(el.dataset.target);
+    const prefix=el.dataset.prefix||'';
+    const suffix=el.dataset.suffix||'';
+    if(reduceMotion){ el.textContent=prefix+target+suffix; return; }
+    const dur=1400, t0=performance.now();
+    function step(now){
+      const p=clamp((now-t0)/dur,0,1);
+      const eased=1-Math.pow(1-p,3);
+      el.textContent=prefix+Math.round(target*eased)+suffix;
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  const countIO=new IntersectionObserver(es=>{es.forEach(e=>{
+    if(e.isIntersecting){ countUp(e.target); countIO.unobserve(e.target); }
+  })},{threshold:.5});
+  document.querySelectorAll('.fact .n[data-target]').forEach(el=>countIO.observe(el));
+
+  /* ── shop the look: pinned horizontal scrub ────────────────── */
+  (function(){
+    const scrub=document.getElementById('scrub');
+    if(!scrub) return;
+    const stage=scrub.querySelector('.scrub-stage');
+    const track=document.getElementById('scrubTrack');
+    const prog=scrub.querySelector('.scrub-progress i');
+    const isTouch=window.matchMedia('(max-width:900px)').matches;
+
+    /* touch or reduced motion → plain swipe rail, no pinning */
+    if(reduceMotion || isTouch){ scrub.classList.add('is-static'); return; }
+
+    let maxX=0;
+    function measure(){ maxX=Math.max(0, track.scrollWidth - stage.clientWidth); }
+    function scrubFrame(){
+      const total=scrub.offsetHeight - window.innerHeight;
+      const scrolled=clamp(-scrub.getBoundingClientRect().top, 0, total);
+      const p=total>0 ? scrolled/total : 0;
+      const moveP=map(p,0.06,0.94);
+      track.style.transform=`translateX(${-moveP*maxX}px)`;
+      if(prog) prog.style.width=(moveP*100)+'%';
+    }
+    measure(); scrubFrame();
+    window.addEventListener('resize',()=>{ measure(); scrubFrame(); });
+    let st=false;
+    window.addEventListener('scroll',()=>{if(!st){requestAnimationFrame(()=>{scrubFrame();st=false});st=true}},{passive:true});
+    window.addEventListener('load',()=>{ measure(); scrubFrame(); });
+  })();
+</script>
+</body>
+</html>
